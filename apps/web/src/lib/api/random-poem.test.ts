@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { failedBody } from '@/test/fetch';
+
 import {
   buildRandomPoemUrl,
   fetchRandomPoemSlugWithRetry,
@@ -27,19 +29,6 @@ function hangUntilAborted(init?: FetchInit): Promise<Response> {
     }
     signal.addEventListener('abort', () => reject(signal.reason), { once: true });
   });
-}
-
-function failedBody(cause: unknown): Response {
-  return new Response(
-    new ReadableStream({
-      start(controller) {
-        controller.enqueue(new TextEncoder().encode('ab'));
-      },
-      pull(controller) {
-        controller.error(cause);
-      },
-    })
-  );
 }
 
 afterEach(() => {

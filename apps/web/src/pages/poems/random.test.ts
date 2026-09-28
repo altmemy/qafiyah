@@ -4,6 +4,7 @@ process.env['INTERNAL_API_URL'] = 'http://api.test';
 process.env['INTERNAL_API_KEY'] = 'internal-key';
 
 import { fakeContext } from '@/test/context';
+import { failedBody } from '@/test/fetch';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -46,13 +47,7 @@ describe('GET /poems/random', () => {
     const fetch = vi.fn(async () => {
       calls++;
       if (calls > failures) return new Response('abcd');
-      return new Response(
-        new ReadableStream({
-          start(controller) {
-            controller.error(new TypeError('Connection closed'));
-          },
-        })
-      );
+      return failedBody(new TypeError('Connection closed'));
     });
     vi.stubGlobal('fetch', fetch);
     const { GET } = await load();
